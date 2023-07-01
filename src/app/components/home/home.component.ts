@@ -1,7 +1,9 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { faCaretRight } from '@fortawesome/free-solid-svg-icons';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { FormControl, Validators } from '@angular/forms';
+import { faCaretRight, faPause, faPlay, faRotate } from '@fortawesome/free-solid-svg-icons';
 
 type DayOfWeek = 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat';
+type Tab = 'auto' | 'manual';
 
 interface DaySession {
   day: DayOfWeek;
@@ -21,15 +23,16 @@ const DEFAULT_TIME = '00:00:00';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
 
   @ViewChild('notes') notes!: ElementRef;
 
   timerStopped = true;
   interval!: ReturnType<typeof setTimeout>;
-  startTime = 0; // in ms since start date value
+  startTime = Date.now(); // in ms since start date value
   timeElapsed = 0; // in ms
   timerFormatted: string = DEFAULT_TIME;
+  activeTab: Tab = 'auto';
 
   todaysSessions: Session[] = [];
   weeksSessions: DaySession[] = [];
@@ -46,28 +49,36 @@ export class HomeComponent {
     ['Sat']: false,
   };
 
-  faCaretRight = faCaretRight;
+  // manual
+  startControl = new FormControl([Validators.required]);
+  endControl = new FormControl([Validators.required]);
+  totalManual = '00:00:00';
 
-  // middle area for start/stop + description + submit
-  // left area for details about today's laps
-  // right area for details about this week's times
-  //  could display a single row for all days this week
-  //  could dropdown each day to see list of each lap for that day
+  // icons
+  faDropdownArrow = faCaretRight;
+  faPlay = faPlay;
+  faPause = faPause;
+  faReset = faRotate;
+
+  ngOnInit(): void {
+    // DEBUG
+    // this.increaseTimeElapsed(60_000 * 60 + 59_000 * 60 + 58_000);
+  }
 
   startTimer() {
-    if (this.timeElapsed === 0) {
-      this.timerStopped = false;
-      this.startTime = Date.now();
-    }
-
-    if (!this.timerStopped && this.timeElapsed > 0) {
+    if (!this.timerStopped) {
       this.pauseTimer();
     } else {
+      this.timerStopped = false;
       this.interval = setInterval(() => {
-        this.timeElapsed = Date.now() - this.startTime;
-        this.formatTime();
+        this.increaseTimeElapsed(1000);
       }, 1000);
     }
+  }
+
+  private increaseTimeElapsed(increaseAmount: number) {
+    this.timeElapsed += increaseAmount;
+    this.formatTime();
   }
 
   private pauseTimer() {
@@ -75,28 +86,38 @@ export class HomeComponent {
     clearInterval(this.interval);
   }
 
+  resetTimerConfirm() {
+    this.pauseTimer();
+    if (confirm('Are you sure you wan to reset the timer?')) {
+      this.resetTimer();
+    }
+  }
+
   resetTimer() {
     this.timeElapsed = 0;
     this.timerFormatted = DEFAULT_TIME;
-    this.pauseTimer();
   }
 
   formatTime() {
     const seconds = this.timeElapsed / 1000;
     const hours = seconds / 3600;
-    const mins = seconds / 60;
+    const mins = seconds % 3600 / 60;
     const secs = seconds % 60;
     this.timerFormatted = `${(hours < 10 ? '0' : '') + Math.floor(hours)}:${(mins < 10 ? '0' : '') + Math.floor(mins)}:${(secs < 10 ? '0' : '') + Math.floor(secs)}`;
+  }
+
+  setTab(tab: Tab) {
+    this.activeTab = tab;
   }
 
   submit() {
     // save start time, end time & notes to file
     const startDateTime = new Date(this.startTime);
     const endDateTime = new Date(this.startTime + this.timeElapsed);
+  }
 
-    console.log('start time: ', startDateTime);
-    console.log('time elapsed: ', this.timerFormatted);
-    console.log('end time: ', endDateTime);
+  submitManual() {
+
   }
 
   expandToday() {

@@ -1,18 +1,45 @@
-<div class="timer-controls">
-  <span class="timer-text">{{timerFormatted}}</span>
-  <div class="timer-btns">
-    <button (click)="startTimer()">{{timerStopped ? 'Start' : 'Pause'}}</button>
-    <button [disabled]="timeElapsed === 0" (click)="resetTimer()">Reset</button>
+<div class="timer">
+  <div class="timer-tabs">
+    <div class="tab main-bg"
+      [class.active]="activeTab === 'auto'"
+      (click)="setTab('auto')">Auto</div>
+    <div class="tab main-bg"
+    [class.active]="activeTab === 'manual'"
+      (click)="setTab('manual')">Manual</div>
   </div>
-  <textarea #notes rows="10" cols="50"></textarea>
-  <button class="submit-btn" (click)="submit()">Submit</button>
+
+  <div *ngIf="activeTab === 'auto'" class="timer-controls timer-container">
+    <span class="timer-text">{{timerFormatted}}</span>
+    <div class="timer-btns">
+      <button class="icon-btn" (click)="startTimer()">
+        <fa-icon *ngIf="timerStopped" class="fa-lg" [icon]="faPlay"></fa-icon>
+        <fa-icon *ngIf="!timerStopped" class="fa-lg" [icon]="faPause"></fa-icon>
+      </button>
+      <button class="icon-btn" [disabled]="timeElapsed === 0" (click)="resetTimerConfirm()">
+        <fa-icon [icon]="faReset"></fa-icon>
+      </button>
+    </div>
+    <textarea #notes></textarea>
+    <button class="submit-btn" (click)="submit()">Submit</button>
+  </div>
+  <div *ngIf="activeTab === 'manual'" class="timer-manual timer-container">
+    <input class="start-time" 
+      type="datetime-local"
+      [formControl]="startControl" />
+    <input class="end-time" 
+      type="datetime-local" 
+      [formControl]="endControl"/>
+    <span class="total-manual">Total Time: {{totalManual}}</span>
+    <textarea #notes></textarea>
+    <button class="submit-btn" (click)="submitManual()">Submit</button>
+  </div>
 </div>
 
 <div class="sessions">
   <div class="todays-sessions session-dropdown">
-    <div class="dropdown-title"
+    <div class="dropdown-title main-bg"
       (click)="expandToday()">
-      <fa-icon [icon]="faCaretRight"></fa-icon>
+      <fa-icon [icon]="faDropdownArrow"></fa-icon>
       Today's Sessions
     </div>
     <table *ngIf="todayExpanded">
@@ -33,16 +60,16 @@
     </table>
   </div>
   <div class="week-session session-dropdown">
-    <div class="dropdown-title"
+    <div class="dropdown-title main-bg"
       (click)="expandWeek()">
-      <fa-icon [icon]="faCaretRight"></fa-icon>
+      <fa-icon [icon]="faDropdownArrow"></fa-icon>
       This Week's Sessions
     </div>
     <ng-container *ngIf="weeksExpanded">
       <div *ngFor="let daySession of weeksSessions" 
         class="session-dropdown indented-dropdown">
-        <div class="dropdown-title" (click)="expandDayOfWeek(daySession.day)">
-          <fa-icon [icon]="faCaretRight"></fa-icon>
+        <div class="dropdown-title main-bg" (click)="expandDayOfWeek(daySession.day)">
+          <fa-icon [icon]="faDropdownArrow"></fa-icon>
           {{daySession?.day}}
         </div>
         <table *ngIf="weekDaysExpandedMap[daySession.day]">
