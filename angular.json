@@ -27,10 +27,21 @@
             "styles": [
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              {
+                "input": "index.js",
+                "inject": false
+              }
+            ]
           },
           "configurations": {
             "production": {
+              "fileReplacements": [
+                {
+                  "replace": "index.js",
+                  "with": "index.prod.js"
+                }
+              ],
               "budgets": [
                 {
                   "type": "initial",

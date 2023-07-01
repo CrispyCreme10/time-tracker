@@ -1,1 +1,67 @@
-<button (click)="close()">Close</button>
+<div class="timer-controls">
+  <span class="timer-text">{{timerFormatted}}</span>
+  <div class="timer-btns">
+    <button (click)="startTimer()">{{timerStopped ? 'Start' : 'Pause'}}</button>
+    <button [disabled]="timeElapsed === 0" (click)="resetTimer()">Reset</button>
+  </div>
+  <textarea #notes rows="10" cols="50"></textarea>
+  <button class="submit-btn" (click)="submit()">Submit</button>
+</div>
+
+<div class="sessions">
+  <div class="todays-sessions session-dropdown">
+    <div class="dropdown-title"
+      (click)="expandToday()">
+      <fa-icon [icon]="faCaretRight"></fa-icon>
+      Today's Sessions
+    </div>
+    <table *ngIf="todayExpanded">
+      <thead>
+        <th>Start</th>
+        <th>End</th>
+        <th>Total</th>
+        <th>Notes</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let session of todaysSessions">
+          <td>session?.start</td>
+          <td>session?.end</td>
+          <td>session?.total</td>
+          <td>session?.notes</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="week-session session-dropdown">
+    <div class="dropdown-title"
+      (click)="expandWeek()">
+      <fa-icon [icon]="faCaretRight"></fa-icon>
+      This Week's Sessions
+    </div>
+    <ng-container *ngIf="weeksExpanded">
+      <div *ngFor="let daySession of weeksSessions" 
+        class="session-dropdown indented-dropdown">
+        <div class="dropdown-title" (click)="expandDayOfWeek(daySession.day)">
+          <fa-icon [icon]="faCaretRight"></fa-icon>
+          {{daySession?.day}}
+        </div>
+        <table *ngIf="weekDaysExpandedMap[daySession.day]">
+          <thead>
+            <th>Start</th>
+            <th>End</th>
+            <th>Total</th>
+            <th>Notes</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let session of daySession?.sessions">
+              <td>session?.start</td>
+              <td>session?.end</td>
+              <td>session?.total</td>
+              <td>session?.notes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ng-container>
+  </div>
+</div>

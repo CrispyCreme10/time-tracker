@@ -1,13 +1,28 @@
 {
   "name": "time-tracker",
   "version": "0.0.0",
-  "main": "main.js",
+  "main": "dist/time-tracker/index.js",
   "scripts": {
-    "ng": "ng",
-    "start": "ng build --base-href ./ && electron .",
+    "ng": "ng serve",
+    "clean": "rimraf dist",
+    "electron": "wait-on http://localhost:4200 && electron .",
+    "prestart": "npm run clean",
+    "start": "concurrently -k \"ng serve\" \"npm run electron\"",
+    "prebuild": "npm run clean",
     "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "lint": "ng lint",
+    "e2e": "ng e2e",
+    "prerelease": "npm run build -- --configuration production",
+    "release": "electron-builder"
+  },
+  "build": {
+    "appId": "com.electron.TimeTracker",
+    "productName": "TimeTracker",
+    "files": [
+      "index.js",
+      "dist/time-tracker"
+    ]
   },
   "private": true,
   "dependencies": {
@@ -19,6 +34,11 @@
     "@angular/platform-browser": "^15.2.0",
     "@angular/platform-browser-dynamic": "^15.2.0",
     "@angular/router": "^15.2.0",
+    "@fortawesome/angular-fontawesome": "^0.12.1",
+    "@fortawesome/fontawesome-svg-core": "^6.2.1",
+    "@fortawesome/free-brands-svg-icons": "^6.2.1",
+    "@fortawesome/free-regular-svg-icons": "^6.2.1",
+    "@fortawesome/free-solid-svg-icons": "^6.2.1",
     "fs": "^0.0.1-security",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -29,13 +49,17 @@
     "@angular/cli": "~15.2.0",
     "@angular/compiler-cli": "^15.2.0",
     "@types/jasmine": "~4.3.0",
+    "concurrently": "^8.2.0",
     "electron": "^25.2.0",
+    "electron-builder": "^24.4.0",
     "jasmine-core": "~4.5.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.1.0",
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
-    "typescript": "~4.9.4"
+    "rimraf": "^5.0.1",
+    "typescript": "~4.9.4",
+    "wait-on": "^7.0.1"
   }
 }
