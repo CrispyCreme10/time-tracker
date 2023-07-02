@@ -1,13 +1,13 @@
 const {app, BrowserWindow, ipcMain} = require('electron')
-const url = require("url");
 const path = require("path");
+const { init, insertSession, getSessions } = require('./server/context');
 
 let win
 
 function createWindow () {
   win = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 960,
+    height: 720,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
@@ -22,7 +22,10 @@ function createWindow () {
   })
 }
 
-app.on('ready', createWindow)
+app.on('ready', () => {
+  init();
+  createWindow();
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -47,4 +50,15 @@ app.on('activate', () => {
 
 ipcMain.on('close', () => {
   win.hide();
+});
+
+ipcMain.on('getSessions', async (event) => {
+  const sessions = await getSessions();
+  console.log(sessions);
+  event.reply('getSessions-reply', sessions);
+})
+
+ipcMain.on('insertSession', async (event, data) => {
+  console.log(data);
+  await insertSession(data);
 });

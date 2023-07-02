@@ -20,7 +20,9 @@
       </button>
     </div>
     <textarea #notes></textarea>
-    <button class="submit-btn" (click)="submit()">Submit</button>
+    <button class="submit-btn"
+      [disabled]="timeElapsed === 0"
+      (click)="submit()">Submit</button>
   </div>
   <div *ngIf="activeTab === 'manual'" class="timer-manual timer-container">
     <input class="start-time" 
@@ -30,7 +32,7 @@
       type="datetime-local" 
       [formControl]="endControl"/>
     <span class="total-manual">Total Time: {{totalManual}}</span>
-    <textarea #notes></textarea>
+    <textarea #notesManual></textarea>
     <button class="submit-btn" (click)="submitManual()">Submit</button>
   </div>
 </div>
@@ -40,23 +42,30 @@
     <div class="dropdown-title main-bg"
       (click)="expandToday()">
       <fa-icon [icon]="faDropdownArrow"></fa-icon>
-      Today's Sessions
+      <span>Today's Sessions</span>
     </div>
-    <table *ngIf="todayExpanded">
+    <table *ngIf="todayExpanded"
+      class="styled-table">
       <thead>
-        <th>Start</th>
-        <th>End</th>
-        <th>Total</th>
-        <th>Notes</th>
+        <tr>
+          <th>Start</th>
+          <th>End</th>
+          <th>Total</th>
+          <th>Notes</th>
+        </tr>
       </thead>
       <tbody>
         <tr *ngFor="let session of todaysSessions">
-          <td>session?.start</td>
-          <td>session?.end</td>
-          <td>session?.total</td>
-          <td>session?.notes</td>
+          <td>{{session?.start | date:'mediumTime'}}</td>
+          <td>{{session?.end | date:'mediumTime'}}</td>
+          <td>{{session?.total}}</td>
+          <td>{{session?.notes}}</td>
         </tr>
       </tbody>
+      <tfoot>
+        <th scope="row" colspan="2" style="text-align: right;">Total Time</th>
+        <td colspan="2">{{todayTotal}}</td>
+      </tfoot>
     </table>
   </div>
   <div class="week-session session-dropdown">
@@ -81,10 +90,10 @@
           </thead>
           <tbody>
             <tr *ngFor="let session of daySession?.sessions">
-              <td>session?.start</td>
-              <td>session?.end</td>
-              <td>session?.total</td>
-              <td>session?.notes</td>
+              <td>{{session?.start | date:'mediumTime'}}</td>
+              <td>{{session?.end | date:'mediumTime'}}</td>
+              <td>{{session?.total}}</td>
+              <td>{{session?.notes}}</td>
             </tr>
           </tbody>
         </table>
