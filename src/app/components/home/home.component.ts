@@ -52,10 +52,14 @@ export class HomeComponent implements OnInit {
   faPause = faPause;
   faReset = faRotate;
 
+  constructor() {
+    this.getSessions();
+  }
+
   ngOnInit(): void {
     // DEBUG
     // this.increaseTimeElapsed(60_000 * 60 + 59_000 * 60 + 58_000);
-    this.getSessions();
+    
   }
 
   startTimer() {
@@ -127,7 +131,7 @@ export class HomeComponent implements OnInit {
       this.resetTimer();
       this.notes.nativeElement.value = '';
 
-      // this.getSessions();
+      this.getSessions();
     }
   }
 

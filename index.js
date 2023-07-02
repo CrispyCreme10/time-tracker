@@ -2,7 +2,7 @@ const {app, BrowserWindow, ipcMain} = require('electron')
 const path = require("path");
 const { init, insertSession, getSessions } = require('./server/context');
 
-let win
+let win;
 
 function createWindow () {
   win = new BrowserWindow({

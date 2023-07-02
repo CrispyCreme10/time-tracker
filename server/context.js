@@ -1,7 +1,7 @@
 const sqlite3 = require('sqlite3');
 const { open } = require('sqlite');
 
-const DB_PATH = '/tmp';
+const DB_PATH = './tmp';
 const DB_NAME = 'time_tracker.db';
 
 var db;
